@@ -456,27 +456,17 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
   $("btnImprimir").addEventListener("click", function(){
     clearTimeout(tiempoInactivo); // no volver al inicio mientras se imprime
     if(urlObjeto){ $("imgImpresion").src = urlObjeto; }
-    // Algunos navegadores no abren la vista de impresión mientras el documento
-    // permanece en pantalla completa. Salir primero y después abrir imprimir.
-    function abrirImpresion(){
-      setTimeout(function(){
-        try{ window.focus(); window.print(); }
-        catch(e){ console.warn("No se pudo abrir la impresión:", e); }
-        reiniciarInactividad();
-      }, 300);
+    // Abrir la impresión directamente desde el clic del usuario.
+    // No cambiar el estado de pantalla completa: el mismo flujo se usa en ambos modos.
+    try{
+      window.print();
+    }catch(e){
+      console.warn("No se pudo abrir la impresión:", e);
+      reiniciarInactividad();
     }
-    if(enFS()){
-      try{
-        var salirFS = document.exitFullscreen || document.webkitExitFullscreen;
-        if(salirFS){
-          var salida = salirFS.call(document);
-          if(salida && typeof salida.then === "function") salida.then(abrirImpresion).catch(abrirImpresion);
-          else abrirImpresion();
-        }else abrirImpresion();
-      }catch(e){ abrirImpresion(); }
-    }else{
-      abrirImpresion();
-    }
+  });
+  window.addEventListener("afterprint", function(){
+    reiniciarInactividad();
   });
 
   // Compartir con el menú de iOS (AirDrop, WhatsApp, Mensajes...)
