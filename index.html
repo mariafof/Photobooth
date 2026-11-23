@@ -264,7 +264,7 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
   window.addEventListener("orientationchange",function(){setTimeout(dibujarBorde,200)});
   dibujarBorde();
   var video = $("video"), lienzo = $("lienzo"), tira = $("tira"), aviso = $("aviso");
-  var stream = null, fotos = [], ocupado = false, tiempoInactivo = null, blobTira = null, urlSubida = null, urlObjeto = null;
+  var stream = null, fotos = [], ocupado = false, tiempoInactivo = null, blobTira = null, urlSubida = null, urlObjeto = null, idPostalCloud = null;
 
   function mostrar(id){
     document.querySelectorAll(".pantalla").forEach(function(p){p.classList.remove("activa")});
@@ -380,18 +380,6 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
     ocupado = false;
   }
 
-  function descargarPostal(){
-    if(!blobTira) return;
-    var enlace = document.createElement("a");
-    var url = URL.createObjectURL(blobTira);
-    enlace.href = url;
-    enlace.download = "xmas-bazar-postal.jpg";
-    enlace.style.display = "none";
-    document.body.appendChild(enlace);
-    enlace.click();
-    enlace.remove();
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 60000);
-  }
 
   async function verPostal(){
     if(ocupado) return;
@@ -399,8 +387,6 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
     await armarTira();
     mostrar("resultado");
     reiniciarInactividad();
-    // Descarga automáticamente la postal en el dispositivo/navegador en uso.
-    descargarPostal();
     ocupado = false;
   }
 
@@ -427,7 +413,14 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
 
     return new Promise(function(resolver){
       lienzo.toBlob(function(b){
-        blobTira = b; urlSubida = null; // postal nueva: el QR anterior ya no sirve
+        blobTira = b;
+        // Cada postal nueva recibe un ID único; su QR se genera con la URL propia de esta imagen.
+        urlSubida = null;
+        idPostalCloud = "xmas-bazar-" + (
+          window.crypto && typeof window.crypto.randomUUID === "function"
+            ? window.crypto.randomUUID()
+            : (Date.now().toString(36) + "-" + Math.random().toString(36).slice(2) + "-" + Math.random().toString(36).slice(2))
+        );
         if(urlObjeto) URL.revokeObjectURL(urlObjeto);
         urlObjeto = URL.createObjectURL(b);
         tira.src = urlObjeto;
@@ -469,9 +462,12 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
   async function subirPostal(){
     if(urlSubida) return urlSubida;
     if(!CLOUDINARY_CLOUD || !CLOUDINARY_PRESET) throw new Error("sin-configurar");
+    if(!idPostalCloud || !blobTira) throw new Error("No se ha generado una postal nueva para este código QR.");
     var datos = new FormData();
     datos.append("file", blobTira, "xmas-bazar.jpg");
     datos.append("upload_preset", CLOUDINARY_PRESET);
+    // ID diferente para cada postal: cada QR apunta a una imagen independiente.
+    datos.append("public_id", idPostalCloud);
     var ctl = new AbortController();
     var corte = setTimeout(function(){ ctl.abort(); }, 45000);
     try{
