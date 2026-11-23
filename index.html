@@ -27,6 +27,61 @@
 
   /* Inicio */
   #inicio{background:var(--azul)}
+  /* Estrellas de portada: distribuidas solo en los márgenes azules libres */
+  #inicio .estrellas-inicio{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  #inicio .estrellas-inicio svg{position:absolute;display:block;fill:var(--oro);transform-origin:center;animation:destello var(--dur) ease-in-out infinite;animation-delay:var(--delay);opacity:.9}
+  #inicio .estrellas-inicio .s01{left:10%;top:7%;width:clamp(9px,3.08vw,17px);--dur:2.1s;--delay:-1.37s}
+  #inicio .estrellas-inicio .s02{left:18%;top:7%;width:clamp(13px,4.10vw,21px);--dur:3.43s;--delay:-2.74s}
+  #inicio .estrellas-inicio .s03{left:26%;top:7%;width:clamp(17px,5.13vw,25px);--dur:2.29s;--delay:-4.11s}
+  #inicio .estrellas-inicio .s04{left:34%;top:7%;width:clamp(11px,3.59vw,19px);--dur:3.62s;--delay:-5.48s}
+  #inicio .estrellas-inicio .s05{left:42%;top:7%;width:clamp(21px,6.15vw,29px);--dur:2.48s;--delay:-6.85s}
+  #inicio .estrellas-inicio .s06{left:50%;top:7%;width:clamp(15px,4.62vw,23px);--dur:3.81s;--delay:-0.22s}
+  #inicio .estrellas-inicio .s07{left:58%;top:7%;width:clamp(9px,2.82vw,16px);--dur:2.67s;--delay:-1.59s}
+  #inicio .estrellas-inicio .s08{left:66%;top:7%;width:clamp(19px,5.64vw,27px);--dur:4.0s;--delay:-2.96s}
+  #inicio .estrellas-inicio .s09{left:74%;top:7%;width:clamp(9px,3.08vw,17px);--dur:2.1s;--delay:-4.33s}
+  #inicio .estrellas-inicio .s10{left:82%;top:7%;width:clamp(13px,4.10vw,21px);--dur:3.43s;--delay:-5.70s}
+  #inicio .estrellas-inicio .s11{left:90%;top:7%;width:clamp(17px,5.13vw,25px);--dur:2.29s;--delay:-7.07s}
+  #inicio .estrellas-inicio .s12{left:5%;top:18%;width:clamp(11px,3.59vw,19px);--dur:3.62s;--delay:-0.44s}
+  #inicio .estrellas-inicio .s13{left:5%;top:30%;width:clamp(21px,6.15vw,29px);--dur:2.48s;--delay:-1.81s}
+  #inicio .estrellas-inicio .s14{left:5%;top:42%;width:clamp(15px,4.62vw,23px);--dur:3.81s;--delay:-3.18s}
+  #inicio .estrellas-inicio .s15{left:5%;top:54%;width:clamp(9px,2.82vw,16px);--dur:2.67s;--delay:-4.55s}
+  #inicio .estrellas-inicio .s16{left:5%;top:66%;width:clamp(19px,5.64vw,27px);--dur:4.0s;--delay:-5.92s}
+  #inicio .estrellas-inicio .s17{left:5%;top:78%;width:clamp(9px,3.08vw,17px);--dur:2.1s;--delay:-7.29s}
+  #inicio .estrellas-inicio .s18{left:94%;top:18%;width:clamp(13px,4.10vw,21px);--dur:3.43s;--delay:-0.66s}
+  #inicio .estrellas-inicio .s19{left:94%;top:30%;width:clamp(17px,5.13vw,25px);--dur:2.29s;--delay:-2.03s}
+  #inicio .estrellas-inicio .s20{left:94%;top:42%;width:clamp(11px,3.59vw,19px);--dur:3.62s;--delay:-3.40s}
+  #inicio .estrellas-inicio .s21{left:94%;top:54%;width:clamp(21px,6.15vw,29px);--dur:2.48s;--delay:-4.77s}
+  #inicio .estrellas-inicio .s22{left:94%;top:66%;width:clamp(15px,4.62vw,23px);--dur:3.81s;--delay:-6.14s}
+  #inicio .estrellas-inicio .s23{left:94%;top:78%;width:clamp(9px,2.82vw,16px);--dur:2.67s;--delay:-7.51s}
+  #inicio .estrellas-inicio .s24{left:18%;top:87%;width:clamp(19px,5.64vw,27px);--dur:4.0s;--delay:-0.88s}
+  #inicio .estrellas-inicio .s25{left:27%;top:87%;width:clamp(9px,3.08vw,17px);--dur:2.1s;--delay:-2.25s}
+  #inicio .estrellas-inicio .s26{left:36%;top:87%;width:clamp(13px,4.10vw,21px);--dur:3.43s;--delay:-3.62s}
+  #inicio .estrellas-inicio .s27{left:45%;top:87%;width:clamp(17px,5.13vw,25px);--dur:2.29s;--delay:-4.99s}
+  #inicio .estrellas-inicio .s28{left:54%;top:87%;width:clamp(11px,3.59vw,19px);--dur:3.62s;--delay:-6.36s}
+  #inicio .estrellas-inicio .s29{left:63%;top:87%;width:clamp(21px,6.15vw,29px);--dur:2.48s;--delay:-7.73s}
+  #inicio .estrellas-inicio .s30{left:72%;top:87%;width:clamp(15px,4.62vw,23px);--dur:3.81s;--delay:-1.10s}
+  #inicio .estrellas-inicio .s31{left:81%;top:87%;width:clamp(9px,2.82vw,16px);--dur:2.67s;--delay:-2.47s}
+
+  @media (orientation:portrait){
+    #inicio .estrellas-inicio .s01{left:7%;top:7%} #inicio .estrellas-inicio .s02{left:93%;top:7%}
+    #inicio .estrellas-inicio .s03{left:5%;top:18%} #inicio .estrellas-inicio .s04{left:95%;top:18%}
+    #inicio .estrellas-inicio .s05{left:5%;top:30%} #inicio .estrellas-inicio .s06{left:95%;top:30%}
+    #inicio .estrellas-inicio .s07{left:5%;top:42%} #inicio .estrellas-inicio .s08{left:95%;top:42%}
+    #inicio .estrellas-inicio .s09{left:5%;top:54%} #inicio .estrellas-inicio .s10{left:95%;top:54%}
+    #inicio .estrellas-inicio .s11{left:5%;top:66%} #inicio .estrellas-inicio .s12{left:95%;top:66%}
+    #inicio .estrellas-inicio .s13{left:5%;top:78%} #inicio .estrellas-inicio .s14{left:95%;top:78%}
+    #inicio .estrellas-inicio .s15{left:15%;top:5%} #inicio .estrellas-inicio .s16{left:30%;top:5%}
+    #inicio .estrellas-inicio .s17{left:45%;top:5%} #inicio .estrellas-inicio .s18{left:60%;top:5%}
+    #inicio .estrellas-inicio .s19{left:75%;top:5%} #inicio .estrellas-inicio .s20{left:85%;top:5%}
+    #inicio .estrellas-inicio .s21{left:15%;top:95%} #inicio .estrellas-inicio .s22{left:25%;top:95%}
+    #inicio .estrellas-inicio .s23{left:35%;top:95%} #inicio .estrellas-inicio .s24{left:45%;top:95%}
+    #inicio .estrellas-inicio .s25{left:55%;top:95%} #inicio .estrellas-inicio .s26{left:65%;top:95%}
+    #inicio .estrellas-inicio .s27{left:75%;top:95%} #inicio .estrellas-inicio .s28{left:85%;top:95%}
+    #inicio .estrellas-inicio .s29{left:10%;top:87%} #inicio .estrellas-inicio .s30{left:90%;top:87%}
+    #inicio .estrellas-inicio .s31{left:50%;top:95%}
+  }
+  @keyframes destello{0%,100%{opacity:.42;transform:translate(-50%,-50%) scale(.78) rotate(0deg)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.2) rotate(12deg)}}
+  @media (prefers-reduced-motion:reduce){#inicio .estrellas-inicio svg{animation:none;opacity:.85}}
   #inicio.activa{padding-bottom:136px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);
     column-gap:3vw;align-items:center}
   #inicio .contenido{min-width:0;text-align:left;display:flex;flex-direction:column;align-items:flex-start}
@@ -116,6 +171,40 @@
 <body>
 
 <section id="inicio" class="pantalla activa">
+  <div class="estrellas-inicio" aria-hidden="true">
+    <svg class="s01" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="s02" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s03" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s04" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="s05" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s06" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s07" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="s08" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s09" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s10" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="s11" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s12" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s13" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="s14" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s15" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s16" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="s17" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s18" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s19" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="s20" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s21" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s22" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="s23" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s24" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s25" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="s26" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s27" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s28" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="s29" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s30" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="s31" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+  </div>
+
   <div class="contenido">
     <h1>X-MAS<br>BAZAR</h1>
     <h2>BY MOONSTER´S HOUSE</h2>
