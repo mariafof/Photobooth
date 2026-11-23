@@ -69,7 +69,7 @@
   #cuenta{position:relative;font-size:clamp(140px,40vw,420px);font-weight:900;color:var(--nieve);
     text-shadow:0 6px 30px rgba(0,0,0,.7);line-height:1}
   #contador{position:absolute;top:max(20px,env(safe-area-inset-top));left:0;right:0;font-size:clamp(28px,4.4vw,44px);
-    color:var(--nieve);text-shadow:0 2px 12px rgba(0,0,0,.8)}
+    color:var(--nieve);text-shadow:0 2px 12px rgba(0,0,0,.8);z-index:2;pointer-events:none}
   #flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .35s}
   #flash.on{opacity:1;transition:none}
   #btnSalirCamara{position:absolute;top:max(18px,env(safe-area-inset-top));right:max(18px,env(safe-area-inset-right));z-index:4;width:48px;height:48px;border:0;border-radius:50%;background:rgba(0,0,0,.48);color:#fff;font:400 38px/1 Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
@@ -455,11 +455,28 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
 
   $("btnImprimir").addEventListener("click", function(){
     clearTimeout(tiempoInactivo); // no volver al inicio mientras se imprime
-    // Invocar la impresión directamente desde el clic para que iOS y otros
-    // navegadores no bloqueen la acción por perder la activación del usuario.
     if(urlObjeto){ $("imgImpresion").src = urlObjeto; }
-    window.print();
-    reiniciarInactividad();
+    // Algunos navegadores no abren la vista de impresión mientras el documento
+    // permanece en pantalla completa. Salir primero y después abrir imprimir.
+    function abrirImpresion(){
+      setTimeout(function(){
+        try{ window.focus(); window.print(); }
+        catch(e){ console.warn("No se pudo abrir la impresión:", e); }
+        reiniciarInactividad();
+      }, 300);
+    }
+    if(enFS()){
+      try{
+        var salirFS = document.exitFullscreen || document.webkitExitFullscreen;
+        if(salirFS){
+          var salida = salirFS.call(document);
+          if(salida && typeof salida.then === "function") salida.then(abrirImpresion).catch(abrirImpresion);
+          else abrirImpresion();
+        }else abrirImpresion();
+      }catch(e){ abrirImpresion(); }
+    }else{
+      abrirImpresion();
+    }
   });
 
   // Compartir con el menú de iOS (AirDrop, WhatsApp, Mensajes...)
