@@ -72,6 +72,7 @@
     color:var(--nieve);text-shadow:0 2px 12px rgba(0,0,0,.8)}
   #flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .35s}
   #flash.on{opacity:1;transition:none}
+  #btnSalirCamara{position:absolute;top:max(18px,env(safe-area-inset-top));right:max(18px,env(safe-area-inset-right));z-index:4;width:48px;height:48px;border:0;border-radius:50%;background:rgba(0,0,0,.48);color:#fff;font:400 38px/1 Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
 
   /* Resultado */
   #resultado{background:var(--azul);gap:14px}
@@ -132,6 +133,7 @@
 
 <section id="camara" class="pantalla">
   <video id="video" autoplay playsinline muted></video>
+  <button id="btnSalirCamara" type="button" aria-label="Salir y regresar al inicio" title="Regresar al inicio">×</button>
   <div id="marcoFoto" aria-hidden="true"></div>
   <div id="contador"></div>
   <div id="cuenta"></div>
@@ -264,7 +266,7 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
   window.addEventListener("orientationchange",function(){setTimeout(dibujarBorde,200)});
   dibujarBorde();
   var video = $("video"), lienzo = $("lienzo"), tira = $("tira"), aviso = $("aviso");
-  var stream = null, fotos = [], ocupado = false, tiempoInactivo = null, blobTira = null, urlSubida = null, urlObjeto = null, idPostalCloud = null;
+  var stream = null, fotos = [], ocupado = false, cancelarCaptura = false, tiempoInactivo = null, blobTira = null, urlSubida = null, urlObjeto = null, idPostalCloud = null;
 
   function mostrar(id){
     document.querySelectorAll(".pantalla").forEach(function(p){p.classList.remove("activa")});
@@ -286,9 +288,14 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
 
   function irAlInicio(){
     clearTimeout(tiempoInactivo);
+    cancelarCaptura = true;
     ocupado = false; fotos = []; blobTira = null; urlSubida = null; aviso.textContent = "";
+    if(stream){ stream.getTracks().forEach(function(track){track.stop()}); stream = null; }
+    video.srcObject = null;
+    $("contador").textContent = ""; $("cuenta").textContent = "";
     mostrar("inicio");
   }
+  $("btnSalirCamara").addEventListener("click", irAlInicio);
 
   async function abrirCamara(){
     if(stream) return true;
@@ -323,9 +330,11 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
   async function capturar(i){
     $("contador").textContent = "Foto " + (i+1) + " de " + TOTAL_FOTOS;
     for(var s=SEGUNDOS_CUENTA;s>0;s--){
+      if(cancelarCaptura) return null;
       $("cuenta").textContent = s;
       await espera(1000);
     }
+    if(cancelarCaptura) return null;
     $("cuenta").textContent = "";
     var c = tomarFoto();
     var f = $("flash"); f.classList.add("on");
@@ -349,13 +358,16 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
 
   async function sesion(){
     if(ocupado) return;
-    ocupado = true; fotos = [];
+    ocupado = true; cancelarCaptura = false; fotos = [];
     if(!(await abrirCamara())){ ocupado = false; return; }
     mostrar("camara");
     await espera(600);
     for(var i=0;i<TOTAL_FOTOS;i++){
-      fotos.push(await capturar(i));
+      var foto = await capturar(i);
+      if(cancelarCaptura || !foto){ ocupado = false; return; }
+      fotos.push(foto);
       await espera(PAUSA_ENTRE_FOTOS_MS);
+      if(cancelarCaptura){ ocupado = false; return; }
     }
     $("contador").textContent = "";
     llenarRevision();
@@ -366,13 +378,16 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
 
   async function retomar(i){
     if(ocupado) return;
-    ocupado = true;
+    ocupado = true; cancelarCaptura = false;
     clearTimeout(tiempoInactivo);
     if(!(await abrirCamara())){ ocupado = false; return; }
     mostrar("camara");
     await espera(600);
-    fotos[i] = await capturar(i);
+    var foto = await capturar(i);
+    if(cancelarCaptura || !foto){ ocupado = false; return; }
+    fotos[i] = foto;
     await espera(500);
+    if(cancelarCaptura){ ocupado = false; return; }
     $("contador").textContent = "";
     llenarRevision();
     mostrar("revision");
@@ -439,9 +454,12 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
   $("btnReintentarCam").addEventListener("click", irAlInicio);
 
   $("btnImprimir").addEventListener("click", function(){
-    reiniciarInactividad();
     clearTimeout(tiempoInactivo); // no volver al inicio mientras se imprime
-    setTimeout(function(){ window.print(); reiniciarInactividad(); }, 150);
+    // Invocar la impresión directamente desde el clic para que iOS y otros
+    // navegadores no bloqueen la acción por perder la activación del usuario.
+    if(urlObjeto){ $("imgImpresion").src = urlObjeto; }
+    window.print();
+    reiniciarInactividad();
   });
 
   // Compartir con el menú de iOS (AirDrop, WhatsApp, Mensajes...)
