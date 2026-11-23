@@ -71,7 +71,56 @@
   #inicio .estrellas-inicio .s39{left:21.7%;top:91.6%;width:16px;--dur:2.67s;--delay:-5.43s}
   #inicio .estrellas-inicio .s40{left:35.9%;top:92.8%;width:16px;--dur:4.0s;--delay:-6.80s}
   @keyframes destello{0%,100%{opacity:.42;transform:translate(-50%,-50%) scale(.78) rotate(0deg)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.2) rotate(12deg)}}
-  @media (prefers-reduced-motion:reduce){#inicio .estrellas-inicio svg{animation:none;opacity:.85}}
+  @media (prefers-reduced-motion:reduce){#inicio .estrellas-inicio svg,#revision .estrellas-seccion svg,#resultado .estrellas-seccion svg{animation:none;opacity:.85}}
+  #revision .estrellas-seccion{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  #revision .estrellas-seccion svg{position:absolute;display:block;fill:var(--oro);transform-origin:center;animation:destello var(--dur) ease-in-out infinite;animation-delay:var(--delay);opacity:.9}
+  #revision>:not(.estrellas-seccion){position:relative;z-index:1}
+  #revision .rv01{left:26.8%;top:5.8%;width:15px;--dur:2.13s;--delay:-1.29s}
+  #revision .rv02{left:11.5%;top:9.5%;width:16px;--dur:3.47s;--delay:-2.58s}
+  #revision .rv03{left:5.0%;top:15.0%;width:15px;--dur:2.31s;--delay:-3.87s}
+  #revision .rv04{left:88.5%;top:15.0%;width:15px;--dur:3.71s;--delay:-5.16s}
+  #revision .rv05{left:49.0%;top:22.5%;width:15px;--dur:2.56s;--delay:-6.45s}
+  #revision .rv06{left:76.5%;top:24.5%;width:15px;--dur:3.89s;--delay:-7.74s}
+  #revision .rv07{left:92.5%;top:25.0%;width:15px;--dur:2.74s;--delay:-1.03s}
+  #revision .rv08{left:6.5%;top:38.0%;width:15px;--dur:4.07s;--delay:-2.32s}
+  #revision .rv09{left:44.0%;top:38.0%;width:15px;--dur:2.13s;--delay:-3.61s}
+  #revision .rv10{left:55.0%;top:42.0%;width:15px;--dur:3.47s;--delay:-4.90s}
+  #revision .rv11{left:88.5%;top:42.0%;width:15px;--dur:2.31s;--delay:-6.19s}
+  #revision .rv12{left:8.0%;top:63.0%;width:15px;--dur:3.71s;--delay:-7.48s}
+  #revision .rv13{left:20.0%;top:60.0%;width:15px;--dur:2.56s;--delay:-0.77s}
+  #revision .rv14{left:60.0%;top:60.0%;width:15px;--dur:3.89s;--delay:-2.06s}
+  #revision .rv15{left:92.5%;top:60.0%;width:15px;--dur:2.74s;--delay:-3.35s}
+  #revision .rv16{left:7.5%;top:87.0%;width:16px;--dur:4.07s;--delay:-4.64s}
+  #revision .rv17{left:19.5%;top:87.5%;width:15px;--dur:2.13s;--delay:-5.93s}
+  #revision .rv18{left:79.0%;top:87.0%;width:16px;--dur:3.47s;--delay:-7.22s}
+  #revision .rv19{left:92.5%;top:87.0%;width:15px;--dur:2.31s;--delay:-0.51s}
+  #resultado .estrellas-seccion{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  #resultado .estrellas-seccion svg{position:absolute;display:block;fill:var(--oro);transform-origin:center;animation:destello var(--dur) ease-in-out infinite;animation-delay:var(--delay);opacity:.9}
+  #resultado>:not(.estrellas-seccion){position:relative;z-index:1}
+  #resultado .rs01{left:6.5%;top:6.0%;width:15px;--dur:2.13s;--delay:-1.29s}
+  #resultado .rs02{left:24.5%;top:9.5%;width:15px;--dur:3.47s;--delay:-2.58s}
+  #resultado .rs03{left:78.0%;top:5.8%;width:15px;--dur:2.31s;--delay:-3.87s}
+  #resultado .rs04{left:89.0%;top:4.2%;width:15px;--dur:3.71s;--delay:-5.16s}
+  #resultado .rs05{left:3.0%;top:18.0%;width:15px;--dur:2.56s;--delay:-6.45s}
+  #resultado .rs06{left:17.0%;top:20.0%;width:15px;--dur:3.89s;--delay:-7.74s}
+  #resultado .rs07{left:71.0%;top:21.0%;width:15px;--dur:2.74s;--delay:-1.03s}
+  #resultado .rs08{left:92.0%;top:19.0%;width:15px;--dur:4.07s;--delay:-2.32s}
+  #resultado .rs09{left:24.5%;top:30.0%;width:15px;--dur:2.13s;--delay:-3.61s}
+  #resultado .rs10{left:43.5%;top:30.0%;width:15px;--dur:3.47s;--delay:-4.90s}
+  #resultado .rs11{left:73.0%;top:28.0%;width:15px;--dur:2.31s;--delay:-6.19s}
+  #resultado .rs12{left:90.5%;top:29.0%;width:15px;--dur:3.71s;--delay:-7.48s}
+  #resultado .rs13{left:10.0%;top:42.0%;width:15px;--dur:2.56s;--delay:-0.77s}
+  #resultado .rs14{left:18.0%;top:42.0%;width:15px;--dur:3.89s;--delay:-2.06s}
+  #resultado .rs15{left:72.0%;top:42.0%;width:15px;--dur:2.74s;--delay:-3.35s}
+  #resultado .rs16{left:89.5%;top:42.0%;width:15px;--dur:4.07s;--delay:-4.64s}
+  #resultado .rs17{left:15.0%;top:63.0%;width:16px;--dur:2.13s;--delay:-5.93s}
+  #resultado .rs18{left:44.0%;top:59.0%;width:15px;--dur:3.47s;--delay:-7.22s}
+  #resultado .rs19{left:72.0%;top:59.0%;width:15px;--dur:2.31s;--delay:-0.51s}
+  #resultado .rs20{left:90.0%;top:63.0%;width:15px;--dur:3.71s;--delay:-1.80s}
+  #resultado .rs21{left:5.0%;top:77.0%;width:15px;--dur:2.56s;--delay:-3.09s}
+  #resultado .rs22{left:24.0%;top:77.0%;width:15px;--dur:3.89s;--delay:-4.38s}
+  #resultado .rs23{left:73.0%;top:77.0%;width:15px;--dur:2.74s;--delay:-5.67s}
+  #resultado .rs24{left:90.0%;top:77.0%;width:15px;--dur:4.07s;--delay:-6.96s}
   #inicio.activa{padding-bottom:136px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);
     column-gap:3vw;align-items:center}
   #inicio .contenido{min-width:0;text-align:left;display:flex;flex-direction:column;align-items:flex-start}
@@ -229,6 +278,27 @@
 </section>
 
 <section id="revision" class="pantalla">
+  <div class="estrellas-seccion" aria-hidden="true">
+    <svg class="rv01" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rv02" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rv03" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rv04" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rv05" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rv06" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rv07" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rv08" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rv09" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rv10" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rv11" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rv12" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rv13" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rv14" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rv15" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rv16" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rv17" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rv18" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rv19" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+  </div>
   <h3>¿Te gustan tus fotos?</h3>
   <div id="rejilla"></div>
   <div class="botones">
@@ -238,6 +308,32 @@
 </section>
 
 <section id="resultado" class="pantalla">
+  <div class="estrellas-seccion" aria-hidden="true">
+    <svg class="rs01" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rs02" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rs03" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rs04" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rs05" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rs06" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rs07" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rs08" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rs09" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rs10" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rs11" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rs12" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rs13" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rs14" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rs15" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rs16" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rs17" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rs18" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rs19" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rs20" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rs21" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rs22" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+    <svg class="rs23" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
+    <svg class="rs24" viewBox="0 0 100 100"><path d="M50 0 58 39 100 50 58 58 50 100 42 58 0 50 42 42Z"/></svg>
+  </div>
   <h3>¡Quedaron geniales!</h3>
   <img id="tira" alt="Tu tira de fotos">
   <div id="aviso"></div>
