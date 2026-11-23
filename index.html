@@ -761,5 +761,98 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
   });
 })();
 </script>
+
+<script>
+/* Mantiene las estrellas en espacios libres en cualquier tamaño u orientación. */
+(function(){
+  var secciones = [
+    {root:document.getElementById('inicio'), capa:document.querySelector('#inicio .estrellas-inicio')},
+    {root:document.getElementById('revision'), capa:document.querySelector('#revision .estrellas-seccion')},
+    {root:document.getElementById('resultado'), capa:document.querySelector('#resultado .estrellas-seccion')}
+  ].filter(function(x){ return x.root && x.capa; });
+  var pendiente = false;
+
+  function seVe(el){
+    var cs=getComputedStyle(el), r=el.getBoundingClientRect();
+    return cs.display!=='none' && cs.visibility!=='hidden' && Number(cs.opacity)!==0 && r.width>0 && r.height>0;
+  }
+  function sePintanFondo(el){
+    var cs=getComputedStyle(el);
+    return (cs.backgroundColor!=='rgba(0, 0, 0, 0)' && cs.backgroundColor!=='transparent') ||
+      cs.backgroundImage!=='none' ||
+      (parseFloat(cs.borderTopWidth)>0 && cs.borderTopStyle!=='none') ||
+      (parseFloat(cs.borderRightWidth)>0 && cs.borderRightStyle!=='none') ||
+      (parseFloat(cs.borderBottomWidth)>0 && cs.borderBottomStyle!=='none') ||
+      (parseFloat(cs.borderLeftWidth)>0 && cs.borderLeftStyle!=='none') || cs.boxShadow!=='none';
+  }
+  function ampliar(r, margen){
+    return {left:r.left-margen, top:r.top-margen, right:r.right+margen, bottom:r.bottom+margen};
+  }
+  function cruza(a,b){
+    return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  }
+  function rectEstrella(star){
+    var old=star.getAttribute('style');
+    star.style.animation='none';
+    star.style.transform='translate(-50%,-50%) scale(1.2)';
+    var r=star.getBoundingClientRect();
+    if(old===null) star.removeAttribute('style'); else star.setAttribute('style',old);
+    return r;
+  }
+  function revisar(){
+    pendiente=false;
+    var vw=document.documentElement.clientWidth, vh=document.documentElement.clientHeight;
+    secciones.forEach(function(sec){
+      var estrellas=Array.prototype.slice.call(sec.capa.querySelectorAll('svg'));
+      estrellas.forEach(function(star){ star.style.visibility=''; });
+      if(!sec.root.classList.contains('activa')) return;
+
+      var obstaculos=[];
+      Array.prototype.forEach.call(sec.root.querySelectorAll('*'),function(el){
+        if(sec.capa.contains(el) || el===sec.capa || !seVe(el)) return;
+        /* Medimos contenido real y contenedores que sí dibujan fondo, borde o sombra. */
+        if(el.children.length===0 || sePintanFondo(el)){
+          var r=el.getBoundingClientRect();
+          if(r.width>1 && r.height>1) obstaculos.push(ampliar(r,7));
+        }
+      });
+      var botonPantalla=document.getElementById('btnPantalla');
+      if(botonPantalla && seVe(botonPantalla)) obstaculos.push(ampliar(botonPantalla.getBoundingClientRect(),7));
+
+      var ocupadas=[];
+      estrellas.forEach(function(star){
+        var r=rectEstrella(star), caja=ampliar(r,5);
+        /* Reserva el borde decorativo y el área de seguridad de la pantalla. */
+        var chocaBorde = r.left<22 || r.top<22 || r.right>vw-22 || r.bottom>vh-22;
+        var chocaElemento=obstaculos.some(function(o){return cruza(caja,o);});
+        var chocaOtra=ocupadas.some(function(o){return cruza(caja,o);});
+        if(chocaBorde || chocaElemento || chocaOtra){
+          star.style.visibility='hidden';
+        }else{
+          ocupadas.push(caja);
+        }
+      });
+    });
+  }
+  function programar(){
+    if(pendiente) return;
+    pendiente=true;
+    requestAnimationFrame(function(){ requestAnimationFrame(revisar); });
+  }
+  window.addEventListener('resize',programar,{passive:true});
+  window.addEventListener('orientationchange',programar,{passive:true});
+  document.addEventListener('fullscreenchange',programar);
+  document.addEventListener('webkitfullscreenchange',programar);
+  var mo=new MutationObserver(programar);
+  secciones.forEach(function(sec){
+    mo.observe(sec.root,{subtree:true,childList:true,attributes:true,attributeFilter:['class','src','hidden']});
+    if('ResizeObserver' in window){ new ResizeObserver(programar).observe(sec.root); }
+  });
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(programar);
+  window.addEventListener('load',programar,{once:true});
+  programar();
+})();
+</script>
+
 </body>
 </html>
