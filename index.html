@@ -62,7 +62,10 @@
 
   /* Cámara */
   #camara{background:#000;padding:0}
-  video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+  video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:scaleX(-1)}
+  #marcoFoto{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(84.375vw,150vh);
+    aspect-ratio:3/2;border:2px solid rgba(255,255,255,.9);box-shadow:0 0 0 9999px rgba(0,0,0,.68);
+    pointer-events:none;z-index:1}
   #cuenta{position:relative;font-size:clamp(140px,40vw,420px);font-weight:900;color:var(--nieve);
     text-shadow:0 6px 30px rgba(0,0,0,.7);line-height:1}
   #contador{position:absolute;top:max(20px,env(safe-area-inset-top));left:0;right:0;font-size:clamp(28px,4.4vw,44px);
@@ -129,6 +132,7 @@
 
 <section id="camara" class="pantalla">
   <video id="video" autoplay playsinline muted></video>
+  <div id="marcoFoto" aria-hidden="true"></div>
   <div id="contador"></div>
   <div id="cuenta"></div>
   <div id="flash"></div>
@@ -150,7 +154,6 @@
   <div class="botones">
     <button id="btnImprimir" type="button" class="prim">Imprimir</button>
     <button id="btnCompartir" type="button">Compartir / Descargar</button>
-    <button id="btnRetomar" type="button" class="sec">Repetir una foto</button>
     <button id="btnOtra" type="button" class="sec">Empezar de nuevo</button>
     <button id="btnTerminar" type="button" class="sec">Terminar</button>
   </div>
@@ -377,12 +380,27 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
     ocupado = false;
   }
 
+  function descargarPostal(){
+    if(!blobTira) return;
+    var enlace = document.createElement("a");
+    var url = URL.createObjectURL(blobTira);
+    enlace.href = url;
+    enlace.download = "xmas-bazar-postal.jpg";
+    enlace.style.display = "none";
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 60000);
+  }
+
   async function verPostal(){
     if(ocupado) return;
     ocupado = true;
     await armarTira();
     mostrar("resultado");
     reiniciarInactividad();
+    // Descarga automáticamente la postal en el dispositivo/navegador en uso.
+    descargarPostal();
     ocupado = false;
   }
 
@@ -422,7 +440,6 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
   // La sesión nueva solo puede comenzar desde el botón principal de inicio.
   document.querySelector("#inicio .boton-grande").addEventListener("click", sesion);
   $("btnOtra").addEventListener("click", irAlInicio);
-  $("btnRetomar").addEventListener("click", function(){ llenarRevision(); mostrar("revision"); reiniciarInactividad(); });
   $("btnListo").addEventListener("click", verPostal);
   $("btnRepetirTodo").addEventListener("click", irAlInicio);
   $("btnTerminar").addEventListener("click", irAlInicio);
@@ -459,9 +476,13 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
     var corte = setTimeout(function(){ ctl.abort(); }, 45000);
     try{
       var res = await fetch("https://api.cloudinary.com/v1_1/" + CLOUDINARY_CLOUD + "/image/upload", {method:"POST", body:datos, signal:ctl.signal});
-      if(!res.ok) throw new Error("http-" + res.status);
-      var j = await res.json();
-      if(!j.secure_url) throw new Error("sin-url");
+      var j;
+      try { j = await res.json(); } catch(parseError) { throw new Error("Cloudinary no devolvió una respuesta válida (HTTP " + res.status + ")."); }
+      if(!res.ok){
+        var motivo = j && j.error && j.error.message ? j.error.message : ("HTTP " + res.status);
+        throw new Error("Cloudinary: " + motivo);
+      }
+      if(!j || !j.secure_url) throw new Error("Cloudinary recibió la postal, pero no devolvió un enlace público.");
       urlSubida = j.secure_url;
       return urlSubida;
     }finally{ clearTimeout(corte); }
@@ -498,9 +519,9 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
       if(!$("qrPantalla").classList.contains("activa")) return;
       console.warn("QR:", e && e.message);
       $("qrEstado").textContent = (e && e.message === "sin-configurar")
-        ? "El código QR no está disponible por ahora. Usa “Compartir desde aquí”."
-        : "No se pudo crear el código QR. Revisa la conexión a internet e inténtalo de nuevo.";
-      if(!e || e.message !== "sin-configurar") $("btnQrReintentar").hidden = false;
+        ? "Falta configurar Cloudinary. Revisa el nombre de la cuenta y el Upload Preset."
+        : "No se pudo crear el código QR. " + ((e && e.message) ? e.message : "Revisa la conexión a internet e inténtalo de nuevo.");
+      $("btnQrReintentar").hidden = false;
     }
   }
 
