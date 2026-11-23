@@ -196,8 +196,8 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
   // ---- Código QR para descargar la postal (gratis con Cloudinary) ----
   // 1) Crea una cuenta gratis en cloudinary.com  2) Settings > Upload > Add upload preset > Signing mode: Unsigned
   // 3) Escribe aquí tu "cloud name" (aparece en el Dashboard) y el nombre del preset.
-  var CLOUDINARY_CLOUD  = "";   // ejemplo: "mi-photobooth"
-  var CLOUDINARY_PRESET = "";   // ejemplo: "postales"
+  var CLOUDINARY_CLOUD  = "pwjudfyb";   // cuenta Cloudinary
+  var CLOUDINARY_PRESET = "ml_default";   // preset de carga de Cloudinary
 
   var $ = function(id){return document.getElementById(id)};
 
@@ -419,13 +419,14 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
     });
   }
 
+  // La sesión nueva solo puede comenzar desde el botón principal de inicio.
   document.querySelector("#inicio .boton-grande").addEventListener("click", sesion);
-  $("btnOtra").addEventListener("click", sesion);
+  $("btnOtra").addEventListener("click", irAlInicio);
   $("btnRetomar").addEventListener("click", function(){ llenarRevision(); mostrar("revision"); reiniciarInactividad(); });
   $("btnListo").addEventListener("click", verPostal);
-  $("btnRepetirTodo").addEventListener("click", sesion);
+  $("btnRepetirTodo").addEventListener("click", irAlInicio);
   $("btnTerminar").addEventListener("click", irAlInicio);
-  $("btnReintentarCam").addEventListener("click", function(){ irAlInicio(); sesion(); });
+  $("btnReintentarCam").addEventListener("click", irAlInicio);
 
   $("btnImprimir").addEventListener("click", function(){
     reiniciarInactividad();
