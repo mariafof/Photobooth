@@ -71,6 +71,9 @@
   #inicio .estrellas-inicio .s39{left:21.7%;top:91.6%;width:16px;--dur:2.67s;--delay:-5.43s}
   #inicio .estrellas-inicio .s40{left:35.9%;top:92.8%;width:16px;--dur:4.0s;--delay:-6.80s}
   @keyframes destello{0%,100%{opacity:.42;transform:translate(-50%,-50%) scale(.78) rotate(0deg)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.2) rotate(12deg)}}
+  .estrellas-inicio,.estrellas-seccion{opacity:0;transition:opacity .3s}
+  .estrellas-inicio.lista,.estrellas-seccion.lista{opacity:1}
+  @media (prefers-reduced-motion:reduce){.estrellas-inicio,.estrellas-seccion{transition:none}}
   @media (prefers-reduced-motion:reduce){#inicio .estrellas-inicio svg,#revision .estrellas-seccion svg,#resultado .estrellas-seccion svg{animation:none;opacity:.85}}
   #revision .estrellas-seccion{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
   #revision .estrellas-seccion svg{position:absolute;display:block;fill:var(--oro);transform-origin:center;animation:destello var(--dur) ease-in-out infinite;animation-delay:var(--delay);opacity:.9}
@@ -444,6 +447,7 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
     if(window.innerHeight > window.innerWidth) disp -= 220; // en vertical se deja lugar al muñeco
     var e = 1; ini.style.setProperty("--esc", 1);
     for(var k=0;k<16 && c.getBoundingClientRect().height > disp;k++){ e -= 0.05; ini.style.setProperty("--esc", e.toFixed(2)); }
+    programarAjusteEstrellas(); // el texto pudo cambiar de tamaño: volver a ubicar las estrellas
   }
   window.addEventListener("resize", ajustarInicio);
   window.addEventListener("orientationchange", function(){ setTimeout(ajustarInicio,250); });
@@ -489,109 +493,154 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
     programarAjusteEstrellas();
   }
 
-  // Reubica únicamente las estrellas para que no cubran textos ni elementos visuales.
-  // Las posiciones originales se conservan como punto de partida en cada orientación.
+  // Reubica las estrellas en espacios libres, en cualquier tamaño de pantalla (celular, tableta o computadora).
+  // Una estrella nunca se queda sobre textos, botones, imágenes, otras estrellas ni sobre el borde ondulado.
+  // Las posiciones originales son el punto de partida: si el lugar está libre, la estrella no se mueve.
   var temporizadorEstrellas = null;
+  var CAPAS_ESTRELLAS = ".estrellas-inicio, .estrellas-seccion";
   function programarAjusteEstrellas(){
+    // Mientras se recalcula, las estrellas se ocultan para que nunca se vean encimadas.
+    Array.prototype.forEach.call(document.querySelectorAll(CAPAS_ESTRELLAS), function(c){ c.classList.remove("lista"); });
     clearTimeout(temporizadorEstrellas);
     temporizadorEstrellas = setTimeout(ajustarEstrellasResponsive, 120);
   }
+
+  // Rectángulo que ocupa realmente una imagen (si usa object-fit: contain, sin los bordes vacíos).
+  function rectContenido(el){
+    var r = el.getBoundingClientRect();
+    if(el.tagName !== "IMG" || !el.naturalWidth || !el.naturalHeight) return r;
+    var cs = getComputedStyle(el);
+    if(cs.objectFit !== "contain") return r;
+    var k = Math.min(r.width/el.naturalWidth, r.height/el.naturalHeight);
+    var w = el.naturalWidth*k, h = el.naturalHeight*k;
+    var pos = (cs.objectPosition || "50% 50%").split(" ");
+    var px = parseFloat(pos[0])/100, py = parseFloat(pos.length > 1 ? pos[1] : pos[0])/100;
+    if(isNaN(px)) px = 0.5;
+    if(isNaN(py)) py = 0.5;
+    var left = r.left + (r.width - w)*px, top = r.top + (r.height - h)*py;
+    return {left:left, top:top, right:left+w, bottom:top+h, width:w, height:h};
+  }
+
   function ajustarEstrellasResponsive(){
     ["inicio","revision","resultado"].forEach(function(id){
       var pantalla = $(id);
       if(!pantalla || !pantalla.classList.contains("activa")) return;
-      var capa = pantalla.querySelector(".estrellas-inicio, .estrellas-seccion");
+      var capa = pantalla.querySelector(CAPAS_ESTRELLAS);
       if(!capa) return;
-
       var estrellas = Array.prototype.slice.call(capa.querySelectorAll("svg"));
-      if(!estrellas.length) return;
       var area = capa.getBoundingClientRect();
-      if(!area.width || !area.height) return;
+      if(!estrellas.length || !area.width || !area.height) return;
 
-      // Los textos se miden por sus fragmentos reales, no por el contenedor completo.
+      var MARGEN = 40;   // distancia mínima al borde de la pantalla (deja libre el borde ondulado)
+      var HOLGURA = 6;   // separación mínima entre una estrella y cualquier otro elemento
       var obstaculos = [];
+      function agregar(r){
+        if(r.width > 0 && r.height > 0) obstaculos.push({left:r.left-HOLGURA, top:r.top-HOLGURA, right:r.right+HOLGURA, bottom:r.bottom+HOLGURA});
+      }
+
+      // Textos: se miden línea por línea, no por el contenedor completo.
       var walker = document.createTreeWalker(pantalla, NodeFilter.SHOW_TEXT, {
         acceptNode:function(n){
           if(!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
-          var p=n.parentElement;
+          var p = n.parentElement;
           if(!p || capa.contains(p) || /^(SCRIPT|STYLE|SVG)$/i.test(p.tagName)) return NodeFilter.FILTER_REJECT;
+          if(getComputedStyle(p).display === "none") return NodeFilter.FILTER_REJECT;
           return NodeFilter.FILTER_ACCEPT;
         }
       });
       var nodo;
-      while((nodo=walker.nextNode())){
-        var rango=document.createRange();
+      while((nodo = walker.nextNode())){
+        var rango = document.createRange();
         rango.selectNodeContents(nodo);
-        Array.prototype.forEach.call(rango.getClientRects(),function(r){
-          if(r.width && r.height) obstaculos.push({left:r.left-4,top:r.top-4,right:r.right+4,bottom:r.bottom+4});
-        });
+        Array.prototype.forEach.call(rango.getClientRects(), agregar);
       }
 
-      // Elementos gráficos e interactivos que deben permanecer despejados.
-      var selectores="img,button,input,select,textarea,video,canvas,.zona-muneco,#muneco,[role='button']";
-      Array.prototype.forEach.call(pantalla.querySelectorAll(selectores),function(el){
-        if(capa.contains(el) || el.hidden || getComputedStyle(el).display==="none" || getComputedStyle(el).visibility==="hidden") return;
-        var r=el.getBoundingClientRect();
-        if(r.width && r.height) obstaculos.push({left:r.left-5,top:r.top-5,right:r.right+5,bottom:r.bottom+5});
+      // Imágenes, botones y controles (incluye los botones que están fuera de la pantalla, como pantalla completa).
+      var elementos = Array.prototype.slice.call(pantalla.querySelectorAll("img,button,input,select,textarea,video,canvas,[role='button']"))
+        .concat(Array.prototype.slice.call(document.querySelectorAll("#btnPantalla,#btnSalirCamara")));
+      elementos.forEach(function(el){
+        if(capa.contains(el) || el.hidden) return;
+        var cs = getComputedStyle(el);
+        if(cs.display === "none" || cs.visibility === "hidden") return;
+        agregar(rectContenido(el));
       });
 
-      var ocupadas=[];
-      function choca(a,b){
-        return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
-      }
-      function libre(cx,cy,w,h){
-        var r={left:cx-w/2-2,top:cy-h/2-2,right:cx+w/2+2,bottom:cy+h/2+2};
-        if(r.left<area.left+2 || r.top<area.top+2 || r.right>area.right-2 || r.bottom>area.bottom-2) return false;
+      var ocupadas = [];
+      function choca(a,b){ return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top; }
+      function libre(cx,cy,mitad){
+        var r = {left:cx-mitad, top:cy-mitad, right:cx+mitad, bottom:cy+mitad};
+        if(r.left < area.left+MARGEN || r.top < area.top+MARGEN || r.right > area.right-MARGEN || r.bottom > area.bottom-MARGEN) return false;
         for(var j=0;j<obstaculos.length;j++) if(choca(r,obstaculos[j])) return false;
         for(var k=0;k<ocupadas.length;k++) if(choca(r,ocupadas[k])) return false;
         return true;
       }
 
       estrellas.forEach(function(estrella){
-        estrella.style.visibility="";
-        estrella.style.left="";
-        estrella.style.top="";
-        var css=getComputedStyle(estrella);
-        var baseX=area.left+parseFloat(css.left || 0);
-        var baseY=area.top+parseFloat(css.top || 0);
-        var w=Math.max(estrella.offsetWidth,12)*1.22+4;
-        var h=Math.max(estrella.offsetHeight,12)*1.22+4;
-        var elegido=null;
+        estrella.style.visibility = "";
+        estrella.style.left = "";
+        estrella.style.top = "";
+        estrella.style.width = "";
+        var css = getComputedStyle(estrella);
+        var anchoBase = parseFloat(css.width) || 16;            // las estrellas son SVG: su tamaño sale del CSS
+        var bx = area.left + (parseFloat(css.left) || 0);
+        var by = area.top + (parseFloat(css.top) || 0);
+        var elegido = null, ancho = anchoBase, mitad = 0;
 
-        if(libre(baseX-area.left,baseY-area.top,w,h)){
-          elegido={x:baseX-area.left,y:baseY-area.top};
-        }else{
-          // Busca el espacio vacío más cercano, en círculos crecientes.
-          var paso=8, maxRadio=Math.min(area.width,area.height)*0.48;
-          for(var radio=paso;radio<=maxRadio && !elegido;radio+=paso){
-            for(var ang=0;ang<360;ang+=15){
-              var rad=ang*Math.PI/180;
-              var x=(baseX-area.left)+Math.cos(rad)*radio;
-              var y=(baseY-area.top)+Math.sin(rad)*radio;
-              if(libre(x,y,w,h)){elegido={x:x,y:y};break;}
+        // Primero se intenta con su tamaño normal; si no hay lugar en toda la pantalla, se prueba más pequeña.
+        [1, 0.8, 0.62].some(function(factor){
+          ancho = anchoBase*factor;
+          mitad = ancho*0.7 + 3;                                // incluye el brillo (escala 1.2) y el giro
+          if(libre(bx,by,mitad)){ elegido = {x:bx, y:by}; return true; }
+          // Espacio libre más cercano, en círculos cada vez más grandes.
+          var paso = 8, maxRadio = Math.max(area.width, area.height);
+          for(var radio=paso; radio<=maxRadio && !elegido; radio+=paso){
+            for(var ang=0; ang<360; ang+=12){
+              var rad = ang*Math.PI/180;
+              var x = bx + Math.cos(rad)*radio, y = by + Math.sin(rad)*radio;
+              if(libre(x,y,mitad)){ elegido = {x:x, y:y}; break; }
             }
           }
-        }
+          return !!elegido;
+        });
 
         if(elegido){
-          estrella.style.left=elegido.x+"px";
-          estrella.style.top=elegido.y+"px";
-          ocupadas.push({left:area.left+elegido.x-w/2-2,top:area.top+elegido.y-h/2-2,
-            right:area.left+elegido.x+w/2+2,bottom:area.top+elegido.y+h/2+2});
+          if(ancho !== anchoBase) estrella.style.width = ancho + "px";
+          estrella.style.left = (elegido.x - area.left) + "px";
+          estrella.style.top = (elegido.y - area.top) + "px";
+          ocupadas.push({left:elegido.x-mitad-2, top:elegido.y-mitad-2, right:elegido.x+mitad+2, bottom:elegido.y+mitad+2});
         }else{
-          // Último recurso: ocultar solo la estrella para no tapar otro elemento.
-          estrella.style.visibility="hidden";
+          // Si de verdad no queda espacio, se oculta solo esa estrella.
+          estrella.style.visibility = "hidden";
         }
       });
+      capa.classList.add("lista");
     });
   }
   window.addEventListener("resize",programarAjusteEstrellas);
   window.addEventListener("orientationchange",function(){setTimeout(programarAjusteEstrellas,250)});
   document.addEventListener("fullscreenchange",programarAjusteEstrellas);
+  document.addEventListener("webkitfullscreenchange",programarAjusteEstrellas);
   window.addEventListener("load",programarAjusteEstrellas);
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(programarAjusteEstrellas);
-  var observadorEstrellas=new MutationObserver(programarAjusteEstrellas);
+  if(document.fonts && document.fonts.addEventListener) document.fonts.addEventListener("loadingdone",programarAjusteEstrellas);
+  // Cuando una imagen termina de cargar (la postal, las fotos, el muñeco) cambia el tamaño de la pantalla.
+  document.addEventListener("load",function(e){ if(e.target && e.target.tagName === "IMG") programarAjusteEstrellas(); },true);
+  // Cambios de contenido o de visibilidad (se ignoran los que hacen las propias estrellas).
+  var observadorEstrellas = new MutationObserver(function(cambios){
+    for(var i=0;i<cambios.length;i++){
+      var t = cambios[i].target; t = (t.nodeType === 1) ? t : t.parentElement;
+      if(t && t.closest && t.closest(CAPAS_ESTRELLAS)) continue;
+      programarAjusteEstrellas(); return;
+    }
+  });
   observadorEstrellas.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:["class","hidden"]});
+  // Cambios de tamaño de los elementos principales (por ejemplo, cuando la postal termina de dibujarse).
+  if(window.ResizeObserver){
+    var vigilante = new ResizeObserver(programarAjusteEstrellas);
+    ["#inicio .contenido","#tira","#rejilla","#resultado .botones","#revision .botones"].forEach(function(sel){
+      var el = document.querySelector(sel); if(el) vigilante.observe(el);
+    });
+  }
 
 
   function espera(ms){return new Promise(function(r){setTimeout(r,ms)})}
