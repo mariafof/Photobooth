@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -186,6 +186,10 @@
   .botones button.prim{background:var(--coral)}
   .botones button.sec{background:var(--nieve);color:var(--verde)}
   #revision{gap:14px}
+  #etiquetaFiltro{flex:none;display:flex;align-items:center;justify-content:center;gap:10px;
+    color:var(--verde);font-size:clamp(19px,2.4vw,25px);line-height:1.1}
+  #filtroFotos{font:inherit;color:var(--verde);background:var(--nieve);border:2px solid var(--verde);
+    border-radius:10px;padding:5px 10px;max-width:52vw}
   #rejilla{flex:1 1 0;min-height:0;width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
     grid-template-rows:repeat(2,minmax(0,1fr));gap:12px 18px}
   @media (orientation:portrait){#rejilla{grid-template-rows:none;grid-auto-rows:auto;align-content:center;row-gap:4vh}}
@@ -310,6 +314,13 @@
     <svg class="rv19" viewBox="0 0 100 100"><path d="M50 0 58 38 96 15 66 48 100 56 62 61 82 96 52 69 39 100 43 63 5 82 35 52 0 40 39 42Z"/></svg>
   </div>
   <h3>¿Te gustan tus fotos?</h3>
+  <label id="etiquetaFiltro" for="filtroFotos">Filtro para las 4 fotos:
+    <select id="filtroFotos">
+      <option value="none">Original</option>
+      <option value="sepia(1)">Sepia</option>
+      <option value="grayscale(1)">Blanco y negro</option>
+    </select>
+  </label>
   <div id="rejilla"></div>
   <div class="botones">
     <button id="btnListo" type="button" class="prim">¡Listo! Ver mi postal</button>
@@ -466,6 +477,7 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
   window.addEventListener("orientationchange",function(){setTimeout(dibujarBorde,200)});
   dibujarBorde();
   var video = $("video"), lienzo = $("lienzo"), tira = $("tira"), aviso = $("aviso");
+  var filtroFotos = "none";
   var stream = null, fotos = [], ocupado = false, cancelarCaptura = false, tiempoInactivo = null, blobTira = null, urlSubida = null, urlObjeto = null, idPostalCloud = null;
 
   function mostrar(id){
@@ -602,6 +614,10 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
     $("contador").textContent = ""; $("cuenta").textContent = "";
     mostrar("inicio");
   }
+  $("filtroFotos").addEventListener("change", function(){
+    filtroFotos = this.value;
+    llenarRevision();
+  });
   $("btnSalirCamara").addEventListener("click", irAlInicio);
 
   async function abrirCamara(){
@@ -655,7 +671,7 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
     fotos.forEach(function(c,i){
       var celda = document.createElement("div"); celda.className = "celda";
       var im = document.createElement("img");
-      im.src = c.toDataURL("image/jpeg", 0.8); im.alt = "Foto " + (i+1);
+      im.src = c.toDataURL("image/jpeg", 0.8); im.alt = "Foto " + (i+1); im.style.filter = filtroFotos;
       var b = document.createElement("button"); b.type = "button";
       b.textContent = "Volver a tomar la foto " + (i+1);
       b.addEventListener("click", function(){ retomar(i); });
@@ -722,7 +738,10 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
     var ys = [20,410,801,1192], pw = 558, ph = 371, xs = [20,619];
     for(var t=0;t<2;t++){
       for(var i=0;i<TOTAL_FOTOS;i++){
+        x.save();
+        x.filter = filtroFotos;
         x.drawImage(fotos[i], xs[t], ys[i], pw, ph);
+        x.restore();
       }
       // pie con el diseño del bazar
       if(pieImg.complete && pieImg.naturalWidth) x.drawImage(pieImg, t*599, 1564);
