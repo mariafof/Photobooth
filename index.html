@@ -329,7 +329,6 @@
   <div id="rejilla"></div>
   <div class="botones">
     <button id="btnListo" type="button" class="prim">¡Listo! Ver mi postal</button>
-    <button id="btnRepetirTodo" type="button" class="sec">Empezar de nuevo</button>
   </div>
 </section>
 
@@ -370,9 +369,7 @@
   <img id="tira" alt="Tu tira de fotos">
   <div id="aviso"></div>
   <div class="botones">
-    <button id="btnImprimir" type="button" class="prim">Imprimir</button>
     <button id="btnCompartir" type="button">Compartir / Descargar</button>
-    <button id="btnOtra" type="button" class="sec">Empezar de nuevo</button>
     <button id="btnTerminar" type="button" class="sec">Terminar</button>
   </div>
 </section>
@@ -386,6 +383,7 @@
   <p id="qrAyuda">Apunta la cámara de tu celular al código y guarda la foto en tu galería.</p>
   <div class="botones">
     <button id="btnQrReintentar" type="button" class="prim" hidden>Reintentar</button>
+    <button id="btnImprimir" type="button" class="prim">Imprimir</button>
     <button id="btnQrCompartir" type="button" class="sec">Compartir desde aquí</button>
     <button id="btnQrVolver" type="button">Volver a mi postal</button>
   </div>
@@ -871,9 +869,7 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
 
   // La sesión nueva solo puede comenzar desde el botón principal de inicio.
   document.querySelector("#inicio .boton-grande").addEventListener("click", sesion);
-  $("btnOtra").addEventListener("click", irAlInicio);
   $("btnListo").addEventListener("click", verPostal);
-  $("btnRepetirTodo").addEventListener("click", irAlInicio);
   $("btnTerminar").addEventListener("click", irAlInicio);
   $("btnReintentarCam").addEventListener("click", irAlInicio);
 
@@ -889,7 +885,8 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
     }
   });
   window.addEventListener("afterprint", function(){
-    // sin temporizador en la postal; solo se intenta mantener la pantalla completa
+    // en la pantalla del QR se reinicia su temporizador; solo se intenta mantener la pantalla completa
+    if($("qrPantalla").classList.contains("activa")) reiniciarInactividad(INACTIVIDAD_QR_MS);
     if(puedeFS && volverFS && !enFS()) entrarFS();
   });
 
