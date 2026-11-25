@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -474,7 +474,114 @@ var QRCodeLib=(()=>{var E=(t,e)=>()=>{try{return e||t((e={exports:{}}).exports,e
     $("borde").style.display = (id==="camara") ? "none" : "block";
     $("btnPantalla").style.display = (puedeFS && id==="inicio") ? "flex" : "none";
     if(id==="inicio") ajustarInicio();
+    programarAjusteEstrellas();
   }
+
+  // Reubica únicamente las estrellas para que no cubran textos ni elementos visuales.
+  // Las posiciones originales se conservan como punto de partida en cada orientación.
+  var temporizadorEstrellas = null;
+  function programarAjusteEstrellas(){
+    clearTimeout(temporizadorEstrellas);
+    temporizadorEstrellas = setTimeout(ajustarEstrellasResponsive, 120);
+  }
+  function ajustarEstrellasResponsive(){
+    ["inicio","revision","resultado"].forEach(function(id){
+      var pantalla = $(id);
+      if(!pantalla || !pantalla.classList.contains("activa")) return;
+      var capa = pantalla.querySelector(".estrellas-inicio, .estrellas-seccion");
+      if(!capa) return;
+
+      var estrellas = Array.prototype.slice.call(capa.querySelectorAll("svg"));
+      if(!estrellas.length) return;
+      var area = capa.getBoundingClientRect();
+      if(!area.width || !area.height) return;
+
+      // Los textos se miden por sus fragmentos reales, no por el contenedor completo.
+      var obstaculos = [];
+      var walker = document.createTreeWalker(pantalla, NodeFilter.SHOW_TEXT, {
+        acceptNode:function(n){
+          if(!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+          var p=n.parentElement;
+          if(!p || capa.contains(p) || /^(SCRIPT|STYLE|SVG)$/i.test(p.tagName)) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      var nodo;
+      while((nodo=walker.nextNode())){
+        var rango=document.createRange();
+        rango.selectNodeContents(nodo);
+        Array.prototype.forEach.call(rango.getClientRects(),function(r){
+          if(r.width && r.height) obstaculos.push({left:r.left-4,top:r.top-4,right:r.right+4,bottom:r.bottom+4});
+        });
+      }
+
+      // Elementos gráficos e interactivos que deben permanecer despejados.
+      var selectores="img,button,input,select,textarea,video,canvas,.zona-muneco,#muneco,[role='button']";
+      Array.prototype.forEach.call(pantalla.querySelectorAll(selectores),function(el){
+        if(capa.contains(el) || el.hidden || getComputedStyle(el).display==="none" || getComputedStyle(el).visibility==="hidden") return;
+        var r=el.getBoundingClientRect();
+        if(r.width && r.height) obstaculos.push({left:r.left-5,top:r.top-5,right:r.right+5,bottom:r.bottom+5});
+      });
+
+      var ocupadas=[];
+      function choca(a,b){
+        return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+      }
+      function libre(cx,cy,w,h){
+        var r={left:cx-w/2-2,top:cy-h/2-2,right:cx+w/2+2,bottom:cy+h/2+2};
+        if(r.left<area.left+2 || r.top<area.top+2 || r.right>area.right-2 || r.bottom>area.bottom-2) return false;
+        for(var j=0;j<obstaculos.length;j++) if(choca(r,obstaculos[j])) return false;
+        for(var k=0;k<ocupadas.length;k++) if(choca(r,ocupadas[k])) return false;
+        return true;
+      }
+
+      estrellas.forEach(function(estrella){
+        estrella.style.visibility="";
+        estrella.style.left="";
+        estrella.style.top="";
+        var css=getComputedStyle(estrella);
+        var baseX=area.left+parseFloat(css.left || 0);
+        var baseY=area.top+parseFloat(css.top || 0);
+        var w=Math.max(estrella.offsetWidth,12)*1.22+4;
+        var h=Math.max(estrella.offsetHeight,12)*1.22+4;
+        var elegido=null;
+
+        if(libre(baseX-area.left,baseY-area.top,w,h)){
+          elegido={x:baseX-area.left,y:baseY-area.top};
+        }else{
+          // Busca el espacio vacío más cercano, en círculos crecientes.
+          var paso=8, maxRadio=Math.min(area.width,area.height)*0.48;
+          for(var radio=paso;radio<=maxRadio && !elegido;radio+=paso){
+            for(var ang=0;ang<360;ang+=15){
+              var rad=ang*Math.PI/180;
+              var x=(baseX-area.left)+Math.cos(rad)*radio;
+              var y=(baseY-area.top)+Math.sin(rad)*radio;
+              if(libre(x,y,w,h)){elegido={x:x,y:y};break;}
+            }
+          }
+        }
+
+        if(elegido){
+          estrella.style.left=elegido.x+"px";
+          estrella.style.top=elegido.y+"px";
+          ocupadas.push({left:area.left+elegido.x-w/2-2,top:area.top+elegido.y-h/2-2,
+            right:area.left+elegido.x+w/2+2,bottom:area.top+elegido.y+h/2+2});
+        }else{
+          // Último recurso: ocultar solo la estrella para no tapar otro elemento.
+          estrella.style.visibility="hidden";
+        }
+      });
+    });
+  }
+  window.addEventListener("resize",programarAjusteEstrellas);
+  window.addEventListener("orientationchange",function(){setTimeout(programarAjusteEstrellas,250)});
+  document.addEventListener("fullscreenchange",programarAjusteEstrellas);
+  window.addEventListener("load",programarAjusteEstrellas);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(programarAjusteEstrellas);
+  var observadorEstrellas=new MutationObserver(programarAjusteEstrellas);
+  observadorEstrellas.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:["class","hidden"]});
+
+
   function espera(ms){return new Promise(function(r){setTimeout(r,ms)})}
 
   function reiniciarInactividad(ms){
